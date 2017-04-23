@@ -1,6 +1,6 @@
   // Set the width and height of the scene.
-  var width = 800;
-  var height = 450;
+  var width = 1920;
+  var height = 1080;
 
   // Make sure we maintain the correct aspect ratio.
   window.addEventListener('resize', function() {
@@ -12,8 +12,8 @@
   renderer.autoResize = true;
   renderer.backgroundColor = 0x85aae5; //Sets the background for the canvas
 
-  var divMain = document.getElementById("Main");
-  divMain.appendChild(renderer.view);
+  // var divMain = document.getElementById("Main");
+  document.body.appendChild(renderer.view);
 
   var questionSquare;
   var firstNumber;
@@ -39,6 +39,8 @@
   var currentScore = 0;
   var livesRemaining = 5;
   var scoreMessage;
+  var cloud;
+  var equationMessage;
   // Create the main stage to draw on.
   var stage = new PIXI.Stage();
 
@@ -49,7 +51,8 @@
   var gameOverScene = new PIXI.Container();
 
   operator = "+";
-  // Start running the game.
+  // Start running the game.  
+
   setup();
 
   /*
@@ -57,11 +60,26 @@
    */
   function setup() {
     resize();
+    //Loads images  
+      PIXI.loader
+      .add("images/cloud.png")   
+      .load(loadImages);
     // Initialise all the scenes
     createAllScenes();
     // Begin the first frame
     gameLoop();
   }
+
+  function loadImages(){
+      cloud = new PIXI.Sprite(
+      PIXI.loader.resources["images/cloud.png"].texture
+    ); 
+
+      cloud.y = height / 2;
+
+    gameScene.addChild(cloud);
+  }
+
   /*
    * This function creates the start up Screen
    */
@@ -166,7 +184,7 @@
     var roundBox = new PIXI.Graphics();
     roundBox.lineStyle(4, 0x99CCFF, 1);
     roundBox.beginFill(fillColour);
-    roundBox.drawRoundedRect(0, 0, width, height, cornerRadius)
+    roundBox.drawRoundedRect(0, 0, width, height, cornerRadius);
     roundBox.endFill();
     roundBox.x = xpos;
     roundBox.y = ypos;
@@ -178,6 +196,13 @@
       startUpGameScene();
       showGameScene();
     });
+    roundBox.on('touchstart', (e) => {
+      //handle event
+      operator = operatorValue;
+      startUpGameScene();
+      showGameScene();
+    });
+
     gameStartScene.addChild(roundBox);
     //Button Text
     var message = new PIXI.Text(
@@ -268,8 +293,8 @@
   function createNewEquation() {
     // gets the equation
     getEquation();
-    //creates the question square
-    createQuestionSquare();
+     //creates the question square
+     createQuestionSquare();
     //draws results ballons
     drawResultBallons();
   }
@@ -279,14 +304,16 @@
    */
   function createQuestionSquare() {
 
-    questionSquare = new PIXI.Graphics();
-    questionSquare.beginFill(0xFFFFFF);
-    questionSquare.drawRect(10, height / 2, 100, 30);
+    // questionSquare = new PIXI.Graphics();
+    // questionSquare.beginFill(0xFFFFFF);//
+    // questionSquare.drawRect(10, height / 2, 100, 30);
+
+   
 
     //Adds to the stage
-    gameScene.addChild(questionSquare);
+    //gameScene.addChild(cloud);
 
-    var message = new PIXI.Text(
+    equationMessage = new PIXI.Text(
       firstNumber + " " + operator + " " + secondNumber + " =", {
         fontFamily: "Arial",
         fontSize: 12,
@@ -294,9 +321,9 @@
       }
     );
     // sets the equation message position
-    message.position.set(20, (height / 2) + 10);
+    equationMessage.position.set(20, (height / 2) + 10);
     //Adds to the stage
-    gameScene.addChild(message);
+    gameScene.addChild(equationMessage);
   }
 
   /*
@@ -450,7 +477,7 @@
       //Increments current score
       currentScore += 1;
       //Displays new Score
-      displayScore()
+      displayScore();
     } else {
       livesRemaining -= 1;
       displayLives();
@@ -478,6 +505,7 @@
     gameScene.removeChild(ballonline1);
     gameScene.removeChild(ballonline2);
     gameScene.removeChild(ballonline3);
+    gameScene.removeChild(equationMessage);
   }
 
   /*
@@ -596,9 +624,9 @@
    */
   function resize() {
     console.log("window");
-    var ratio = 450 / 800;
+    var ratio = 1080 / 1920;
     var docWidth = document.body.clientWidth;
-    var docHeight = document.body.clientHeight;
+    var docHeight = document.body.heiclientHeight;
 
     if (docHeight / docWidth < ratio) {
       renderer.view.style.height = '100%';
