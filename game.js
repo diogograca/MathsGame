@@ -20,7 +20,7 @@
   var secondNumber;
   var operator;
   var result;
-  var incorrectResult1;
+  var incorrectResult1;  
   var incorrectResult2;
   var resultBallon;
   var resultBallon2;
@@ -41,6 +41,8 @@
   var scoreMessage;
   var cloud;
   var equationMessage;
+  var hasGameStarted = false;
+  var velocity = 0.5;
   // Create the main stage to draw on.
   var stage = new PIXI.Stage();
 
@@ -58,12 +60,12 @@
   /*
    * Build the scene and begin animating.
    */
-  function setup() {
+   function setup() {
     resize();
     //Loads images  
-      PIXI.loader
-      .add("images/cloud.png")   
-      .load(loadImages);
+    PIXI.loader
+    .add("images/cloud.png")   
+    .load(loadImages);
     // Initialise all the scenes
     createAllScenes();
     // Begin the first frame
@@ -71,51 +73,61 @@
   }
 
   function loadImages(){
-      cloud = new PIXI.Sprite(
+    cloud = new PIXI.Sprite(
       PIXI.loader.resources["images/cloud.png"].texture
-    ); 
+      );
+     
+    cloud.y = (height / 2) - height * 0.2;
 
-      cloud.y = height / 2;
 
     gameScene.addChild(cloud);
   }
+
 
   /*
    * This function creates the start up Screen
    */
   function createStartUpScene() {
+
+    var fontSizeText = 32;
     var levelMessage = new PIXI.Text(
       "Please choose one of the below", {
         fontFamily: "Arial",
-        fontSize: 20,
-        fill: "black"
+        fontSize: fontSizeText,
+        fill: "white"
       });
     //sets the position  
-    levelMessage.position.set(width * 0.3, 20);
+    levelMessage.position.set(width * 0.4, 20);
     //Adds to the stage
     gameStartScene.addChild(levelMessage);
 
-    var xpos = width * 0.36;
-    var boxWidth = 180;
-    var boxHeight = 50;
+    var xpos = width * 0.41;
+    var ypos = 90;
+    var marginForBoxes = 40;
+    var boxWidth = width * 0.2;
+    var boxHeight = height * 0.1;
     var borderSize = 4;
     var borderColour = 0x99CCFF;
     var cornerRadious = 10;
     //TODO need to find a way to measure the string and centering the text instead of hard coded values
     //Not essential, but nice to implement it
-    drawRoundedRect(borderSize, borderColour, 1, 0xFF9933, xpos, 90, boxWidth, boxHeight, cornerRadious, "+", "Addition", xpos + 50, 100);
-    drawRoundedRect(borderSize, borderColour, 1, 0xFF9933, xpos, 190, boxWidth, boxHeight, cornerRadious, "-", "Subtraction", xpos + 40, 200);
-    drawRoundedRect(borderSize, borderColour, 1, 0xFF9933, xpos, 290, boxWidth, boxHeight, cornerRadious, "*", "Multiplication", xpos + 35, 300);
-    drawRoundedRect(borderSize, borderColour, 1, 0xFF9933, xpos, 390, boxWidth, boxHeight, cornerRadious, "/", "Division", xpos + 55, 400);
+    drawRoundedRect(borderSize, borderColour, 1, 0xFF9933, xpos, ypos, boxWidth, boxHeight, cornerRadious, "+", "Addition", xpos, ypos + (boxHeight / 2) - (fontSizeText / 2));
+    ypos += boxHeight + marginForBoxes;
+    drawRoundedRect(borderSize, borderColour, 1, 0xFF9933, xpos, ypos, boxWidth, boxHeight, cornerRadious, "-", "Subtraction", xpos, ypos + (boxHeight / 2) - (fontSizeText / 2));
+    ypos += boxHeight + marginForBoxes;
+    drawRoundedRect(borderSize, borderColour, 1, 0xFF9933, xpos, ypos, boxWidth, boxHeight, cornerRadious, "*", "Multiplication", xpos, ypos + (boxHeight / 2) - (fontSizeText / 2));
+    ypos += boxHeight + marginForBoxes;
+    drawRoundedRect(borderSize, borderColour, 1, 0xFF9933, xpos, ypos, boxWidth, boxHeight, cornerRadious, "/", "Division", xpos, ypos + (boxHeight / 2) - (fontSizeText / 2));
   }
   /*
    * Function that creates the game over scene
    */
-  function createGameOverScene() {
+   function createGameOverScene() {
+    var gameOverText = "GAME OVER";
     var gameOverMessage = new PIXI.Text(
-      "GAME OVER", {
+      gameOverText, {
         fontFamily: "Arial",
-        fontSize: 24,
+        fontSize: 32,
         fill: "white"
       });
     //sets the position  
@@ -123,51 +135,70 @@
     //Adds to the stage
     gameOverScene.addChild(gameOverMessage);
 
+    var scoreText = "You scored: " + currentScore + " points!"; 
     scoreMessage = new PIXI.Text(
-      "You scored: " + currentScore + " points!", {
+      scoreText, {
         fontFamily: "Arial",
-        fontSize: 12,
+        fontSize: 28,
         fill: "white"
       });
     //sets the position  
-    scoreMessage.position.set(width * 0.42, 180);
+    scoreMessage.position.set(width * 0.4 - 25, 190);
     //Adds to the stage
     gameOverScene.addChild(scoreMessage);
+
+    var boxWidth = width * 0.2;
+    var boxHeight = height * 0.1;
+    var xpos = width * 0.35;
+    var ypos = 240;
 
     var roundBox = new PIXI.Graphics();
     roundBox.lineStyle(4, 0x99CCFF, 1);
     roundBox.beginFill(0xFF9933);
-    roundBox.drawRoundedRect(0, 0, 180, 50, 10);
+    roundBox.drawRoundedRect(0, 0, boxWidth,boxHeight, 10);
     roundBox.endFill();
-    roundBox.x = width * 0.38;
-    roundBox.y = 200;
+    roundBox.x = xpos;
+    roundBox.y = ypos;
     roundBox.interactive = true;
     roundBox.buttonMode = true;
     roundBox.on('click', (e) => {
       //handle event
-      gameOverScene.visible = false;
-      //resets the number of lives remaining
-      livesRemaining = 5;
-      currentScore = 0;
-      gameStartScene.visible = true;
+      playAgain();
     });
+    roundBox.on('touchstart', (e) => {
+      //handle event
+      playAgain();
+     
+    });
+
     gameOverScene.addChild(roundBox);
+
+    var playAgainText =  "Play Again!" ;
     //Button Text
     var message = new PIXI.Text(
-      "Play Again!", {
+      playAgainText, {
         fontFamily: "Arial",
-        fontSize: 20,
-        fill: "black"
+        fontSize: 32,
+        fill: "white"
       }
-    );
+      );
 
-    message.position.set(width * 0.43, 210);
+    message.position.set(xpos + (boxWidth / 2) - measureString(playAgainText,'Arial', 32) , ypos + 40);
     gameOverScene.addChild(message);
   }
+
+  function playAgain(){
+    gameOverScene.visible = false;
+    //resets the number of lives remaining
+    livesRemaining = 5;
+    currentScore = 0;
+    gameStartScene.visible = true;
+  }
+
   /*
    * This function shows the game scene
    */
-  function showGameScene() {
+   function showGameScene() {
     gameStartScene.visible = false;
     clearDownCurrentBallons();
     gameScene.visible = true;
@@ -177,7 +208,7 @@
   /*
    * This function draws a rounded Rect
    */
-  function drawRoundedRect(borderWidth, borderCoLour, borderTransparency, fillColour,
+   function drawRoundedRect(borderWidth, borderCoLour, borderTransparency, fillColour,
     xpos, ypos, width, height, cornerRadius, operatorValue, buttonText,
     xposButton, yposButton) {
     //Button  
@@ -191,16 +222,12 @@
     roundBox.interactive = true;
     roundBox.buttonMode = true;
     roundBox.on('click', (e) => {
-      //handle event
-      operator = operatorValue;
-      startUpGameScene();
-      showGameScene();
-    });
+     //handle event
+     startClick(operatorValue);
+   });
     roundBox.on('touchstart', (e) => {
       //handle event
-      operator = operatorValue;
-      startUpGameScene();
-      showGameScene();
+      startClick(operatorValue);
     });
 
     gameStartScene.addChild(roundBox);
@@ -208,20 +235,54 @@
     var message = new PIXI.Text(
       buttonText, {
         fontFamily: "Arial",
-        fontSize: 20,
-        fill: "black"
+        fontSize: 32,
+        fill: "white"
       }
-    );
+      );
 
+    var textWidth = measureString(buttonText,"Arial",32);
+
+    xposButton += (width / 2) - (textWidth);
     message.position.set(xposButton, yposButton);
     gameStartScene.addChild(message);
 
   }
 
   /*
+  * This functions measures a string
+  */
+  function measureString(txt, fontname, fontsize){
+    // Create dummy span
+    this.e = document.createElement('span');
+    // Set font-size
+    this.e.style.fontSize = fontsize;
+    // Set font-face / font-family
+    this.e.style.fontFamily = fontname;
+    // Set text
+    this.e.innerHTML = txt;
+    document.body.appendChild(this.e);
+    // Get width NOW, since the dummy span is about to be removed from the document
+    var w = this.e.offsetWidth;
+    // Cleanup
+    document.body.removeChild(this.e);
+    // Return the lenght
+    return w;
+  }
+
+  /*
+  * THis function is called by on click or on touch of the game start 
+  */
+  function startClick(operatorValue){
+    operator = operatorValue;
+    startUpGameScene();
+    showGameScene();
+    hasGameStarted = true;
+  }
+
+  /*
    * This function adds all the scenes to the stage
    */
-  function createAllScenes() {
+   function createAllScenes() {
     stage.addChild(gameStartScene);
     gameScene.visible = false;
     stage.addChild(gameScene);
@@ -235,7 +296,7 @@
   /*
    * This function starts the game scene
    */
-  function startUpGameScene() {
+   function startUpGameScene() {
     clearDownCurrentBallons();
     // creates the first equation
     createNewEquation();
@@ -248,20 +309,20 @@
   /*
    * Display the remaining lives 
    */
-  function displayLives() {
+   function displayLives() {
     //removes the current message to write a new one
     gameScene.removeChild(livesRemainingText);
 
     livesRemainingText = new PIXI.Text(
       "Lives Remaining: " + livesRemaining, {
         fontFamily: "Arial",
-        fontSize: 20,
+        fontSize: 32,
         fill: "black"
       }
-    );
+      );
 
     // sets the equation message position
-    livesRemainingText.position.set(width - 200, 20);
+    livesRemainingText.position.set(width - 300, 20);
     //Adds to the stage
     gameScene.addChild(livesRemainingText);
   }
@@ -269,17 +330,17 @@
   /*
    * Display the current score 
    */
-  function displayScore() {
+   function displayScore() {
     //removes the current message to write a new one
     gameScene.removeChild(currentScoreText);
 
     currentScoreText = new PIXI.Text(
       "Current Score: " + currentScore, {
         fontFamily: "Arial",
-        fontSize: 20,
+        fontSize: 32,
         fill: "black"
       }
-    );
+      );
 
     // sets the equation message position
     currentScoreText.position.set(20, 20);
@@ -290,11 +351,11 @@
   /*
    * Function that picks the a new equation and draws the elements
    */
-  function createNewEquation() {
+   function createNewEquation() {
     // gets the equation
     getEquation();
      //creates the question square
-     createQuestionSquare();
+    createQuestionCloud();
     //draws results ballons
     drawResultBallons();
   }
@@ -302,13 +363,7 @@
   /*
    * Draws the question square
    */
-  function createQuestionSquare() {
-
-    // questionSquare = new PIXI.Graphics();
-    // questionSquare.beginFill(0xFFFFFF);//
-    // questionSquare.drawRect(10, height / 2, 100, 30);
-
-   
+   function createQuestionCloud() {
 
     //Adds to the stage
     //gameScene.addChild(cloud);
@@ -316,12 +371,12 @@
     equationMessage = new PIXI.Text(
       firstNumber + " " + operator + " " + secondNumber + " =", {
         fontFamily: "Arial",
-        fontSize: 12,
+        fontSize: 32,
         fill: "black"
       }
-    );
+      );
     // sets the equation message position
-    equationMessage.position.set(20, (height / 2) + 10);
+    equationMessage.position.set(250, (height / 2)  - height * 0.07);
     //Adds to the stage
     gameScene.addChild(equationMessage);
   }
@@ -329,21 +384,30 @@
   /*
    * Functions that draws the ballon results
    */
-  function drawResultBallons() {
+   function drawResultBallons() {
     var minNumber = 0;
     var maxNumber;
     var i;
     var message;
+    var ballonWidth = 40;
+    var ballonHeight = 60;
+    var ballonColour = 0xe51616;
+    var lineColour = 0x000000;
+    var ballonLineLength = 150;
 
     //FIRST RESULT
     resultBallon = new PIXI.Graphics();
-    resultBallon.beginFill(0xe51616);
-    resultBallon.lineStyle(1, 0x000000, 1);
-    resultBallon.drawEllipse(width * 0.3, height, 20, 30);
+    resultBallon.beginFill(ballonColour);
+    resultBallon.lineStyle(1, lineColour, 1);
+    resultBallon.drawEllipse(width * 0.4, height, ballonWidth, ballonHeight);
     resultBallon.endFill();
     resultBallon.interactive = true;
     resultBallon.buttonMode = true;
     resultBallon.on('click', (event) => {
+      //handle event
+      checkAnswer(resultText1._text);
+    });
+    resultBallon.on('touchstart', (event) => {
       //handle event
       checkAnswer(resultText1._text);
     });
@@ -358,22 +422,22 @@
     resultText1 = new PIXI.Text(
       message, {
         fontFamily: "Arial",
-        fontSize: 12,
-        fill: "black"
+        fontSize: 32,
+        fill: "white"
       }
-    );
+      );
 
     ballonline1 = new PIXI.Graphics();
     ballonline1.lineStyle(1, 0x000000, 1);
     ballonline1.moveTo(0, 0);
-    ballonline1.lineTo(0, 50);
-    ballonline1.x = (width * 0.3);
-    ballonline1.y = height + 30;
+    ballonline1.lineTo(0, ballonLineLength);
+    ballonline1.x = (width * 0.4);
+    ballonline1.y = height + ballonHeight;
     gameScene.addChild(ballonline1);
-
+    //removes from the array to ensure the same answer is not picked
     results.splice(i, 1);
 
-    resultText1.position.set((width * 0.3) - 3, height - 5);
+    resultText1.position.set((width * 0.4) - measureString(message,'Arial', 32), height - 10);
     //Adds to the stage
     gameScene.addChild(resultText1);
 
@@ -383,13 +447,17 @@
     message = results[i];
 
     resultBallon2 = new PIXI.Graphics();
-    resultBallon2.beginFill(0xe51616);
-    resultBallon2.lineStyle(1, 0x000000, 1);
-    resultBallon2.drawEllipse(width * 0.5, height, 20, 30);
+    resultBallon2.beginFill(ballonColour);
+    resultBallon2.lineStyle(1, lineColour, 1);
+    resultBallon2.drawEllipse(width * 0.55, height, ballonWidth, ballonHeight);
     resultBallon2.endFill();
     resultBallon2.interactive = true;
     resultBallon2.buttonMode = true;
     resultBallon2.on('click', (e) => {
+      //handle event
+      checkAnswer(resultText2._text);
+    });
+    resultBallon2.on('touchstart', (event) => {
       //handle event
       checkAnswer(resultText2._text);
     });
@@ -401,23 +469,23 @@
     resultText2 = new PIXI.Text(
       message, {
         fontFamily: "Arial",
-        fontSize: 12,
-        fill: "black"
+        fontSize: 32,
+        fill: "white"
       }
-    );
-
+      );
+    //removes from the array to ensure the same answer is not picked
     results.splice(i, 1);
 
-    resultText2.position.set((width * 0.5) - 3, height - 5);
+    resultText2.position.set((width * 0.55) - measureString(message,'Arial', 32), height - 10);
     //Adds to the stage
     gameScene.addChild(resultText2);
 
     ballonline2 = new PIXI.Graphics();
     ballonline2.lineStyle(1, 0x000000, 1);
     ballonline2.moveTo(0, 0);
-    ballonline2.lineTo(0, 50);
-    ballonline2.x = (width * 0.5);
-    ballonline2.y = height + 30;
+    ballonline2.lineTo(0, ballonLineLength);
+    ballonline2.x = (width * 0.55);
+    ballonline2.y = height + ballonHeight;
     gameScene.addChild(ballonline2);
 
     //THIRD RESULT
@@ -426,13 +494,17 @@
     message = results[i];
 
     resultBallon3 = new PIXI.Graphics();
-    resultBallon3.beginFill(0xe51616);
-    resultBallon3.lineStyle(1, 0x000000, 1);
-    resultBallon3.drawEllipse(width * 0.7, height, 20, 30);
+    resultBallon3.beginFill(ballonColour);
+    resultBallon3.lineStyle(1, lineColour, 1);
+    resultBallon3.drawEllipse(width * 0.7, height, ballonWidth, ballonHeight);
     resultBallon3.endFill();
     resultBallon3.interactive = true;
     resultBallon3.buttonMode = true;
     resultBallon3.on('click', (event) => {
+      //handle event
+      checkAnswer(resultText3._text);
+    });
+    resultBallon3.on('touchstart', (event) => {
       //handle event
       checkAnswer(resultText3._text);
     });
@@ -443,23 +515,23 @@
     resultText3 = new PIXI.Text(
       message, {
         fontFamily: "Arial",
-        fontSize: 12,
-        fill: "black"
+        fontSize: 32,
+        fill: "white"
       }
-    );
-
+      );
+    //removes from the array to ensure the same answer is not picked
     results.splice(i, 1);
 
-    resultText3.position.set((width * 0.7) - 3, height - 5);
+    resultText3.position.set((width * 0.7) - measureString(message,'Arial', 32), height - 10);
     //Adds to the stage
     gameScene.addChild(resultText3);
 
     ballonline3 = new PIXI.Graphics();
     ballonline3.lineStyle(1, 0x000000, 1);
     ballonline3.moveTo(0, 0);
-    ballonline3.lineTo(0, 50);
+    ballonline3.lineTo(0, ballonLineLength);
     ballonline3.x = (width * 0.7);
-    ballonline3.y = height + 30;
+    ballonline3.y = height + ballonHeight;
     gameScene.addChild(ballonline3);
 
     // ensures the array is empty
@@ -468,7 +540,7 @@
   /*
    * Function that checks if the answers is the correct result
    */
-  function checkAnswer(answer) {
+   function checkAnswer(answer) {
     if (answer == result) {
       // Clears the stage
       clearDownCurrentBallons();
@@ -478,6 +550,8 @@
       currentScore += 1;
       //Displays new Score
       displayScore();
+      //Increase Speed
+      velocity += 0.1;
     } else {
       livesRemaining -= 1;
       displayLives();
@@ -492,10 +566,11 @@
     //creates a new equation
     createNewEquation();
   }
+
   /*
    * Function that clear down the current equation from the stage
    */
-  function clearDownCurrentBallons() {
+   function clearDownCurrentBallons() {
     gameScene.removeChild(resultBallon);
     gameScene.removeChild(resultBallon2);
     gameScene.removeChild(resultBallon3);
@@ -511,122 +586,111 @@
   /*
    * Function that gets a random equation depending on the operator
    */
-  function getEquation() {
+   function getEquation() {
     var maxNumber;
     var minNumber = 0;
     var i;
 
     switch (operator) {
       case "+":
-        maxNumber = (equations[0].additions.length) - 1;
-        i = getRandomInt(minNumber, maxNumber);
+      maxNumber = (equations[0].additions.length) - 1;
+      i = getRandomInt(minNumber, maxNumber);
 
-        firstNumber = equations[0].additions[i].firstNumber;
-        secondNumber = equations[0].additions[i].secondNumber;
-        result = equations[0].additions[i].correctResult;
-        incorrectResult1 = equations[0].additions[i].incorrectResult1;
-        incorrectResult2 = equations[0].additions[i].incorrectResult2;
+      firstNumber = equations[0].additions[i].firstNumber;
+      secondNumber = equations[0].additions[i].secondNumber;
+      result = equations[0].additions[i].correctResult;
+      incorrectResult1 = equations[0].additions[i].incorrectResult1;
+      incorrectResult2 = equations[0].additions[i].incorrectResult2;
 
-        results.push(result);
-        results.push(incorrectResult1);
-        results.push(incorrectResult2);
+      results.push(result);
+      results.push(incorrectResult1);
+      results.push(incorrectResult2);
 
-        break;
+      break;
       case "-":
-        maxNumber = (equations[0].subtractions.length) - 1;
-        i = getRandomInt(minNumber, maxNumber);
+      maxNumber = (equations[0].subtractions.length) - 1;
+      i = getRandomInt(minNumber, maxNumber);
 
-        firstNumber = equations[0].subtractions[i].firstNumber;
-        secondNumber = equations[0].subtractions[i].secondNumber;
-        result = equations[0].subtractions[i].correctResult;
-        incorrectResult1 = equations[0].subtractions[i].incorrectResult1;
-        incorrectResult2 = equations[0].subtractions[i].incorrectResult2;
+      firstNumber = equations[0].subtractions[i].firstNumber;
+      secondNumber = equations[0].subtractions[i].secondNumber;
+      result = equations[0].subtractions[i].correctResult;
+      incorrectResult1 = equations[0].subtractions[i].incorrectResult1;
+      incorrectResult2 = equations[0].subtractions[i].incorrectResult2;
 
-        results.push(result);
-        results.push(incorrectResult1);
-        results.push(incorrectResult2);
+      results.push(result);
+      results.push(incorrectResult1);
+      results.push(incorrectResult2);
 
-        break;
+      break;
       case "*":
-        maxNumber = (equations[0].multiplications.length) - 1;
-        i = getRandomInt(minNumber, maxNumber);
+      maxNumber = (equations[0].multiplications.length) - 1;
+      i = getRandomInt(minNumber, maxNumber);
 
-        firstNumber = equations[0].multiplications[i].firstNumber;
-        secondNumber = equations[0].multiplications[i].secondNumber;
-        result = equations[0].multiplications[i].correctResult;
-        incorrectResult1 = equations[0].multiplications[i].incorrectResult1;
-        incorrectResult2 = equations[0].multiplications[i].incorrectResult2;
+      firstNumber = equations[0].multiplications[i].firstNumber;
+      secondNumber = equations[0].multiplications[i].secondNumber;
+      result = equations[0].multiplications[i].correctResult;
+      incorrectResult1 = equations[0].multiplications[i].incorrectResult1;
+      incorrectResult2 = equations[0].multiplications[i].incorrectResult2;
 
-        results.push(result);
-        results.push(incorrectResult1);
-        results.push(incorrectResult2);
+      results.push(result);
+      results.push(incorrectResult1);
+      results.push(incorrectResult2);
 
-        break;
+      break;
       case "/":
-        maxNumber = (equations[0].divisions.length) - 1;
-        i = getRandomInt(minNumber, maxNumber);
+      maxNumber = (equations[0].divisions.length) - 1;
+      i = getRandomInt(minNumber, maxNumber);
 
-        firstNumber = equations[0].divisions[i].firstNumber;
-        secondNumber = equations[0].divisions[i].secondNumber;
-        result = equations[0].divisions[i].correctResult;
-        incorrectResult1 = equations[0].divisions[i].incorrectResult1;
-        incorrectResult2 = equations[0].divisions[i].incorrectResult2;
+      firstNumber = equations[0].divisions[i].firstNumber;
+      secondNumber = equations[0].divisions[i].secondNumber;
+      result = equations[0].divisions[i].correctResult;
+      incorrectResult1 = equations[0].divisions[i].incorrectResult1;
+      incorrectResult2 = equations[0].divisions[i].incorrectResult2;
 
-        results.push(result);
-        results.push(incorrectResult1);
-        results.push(incorrectResult2);
+      results.push(result);
+      results.push(incorrectResult1);
+      results.push(incorrectResult2);
 
-        break;
+      break;
     }
   }
   /*
    * Function that moves the ballons up
    */
-  function resultBallonsPositions() {
-    resultBallon.y -= 0.5;
-    resultText1.y -= 0.5;
-    ballonline1.y -= 0.5;
-    resultBallon2.y -= 0.5;
-    resultText2.y -= 0.5;
-    ballonline2.y -= 0.5;
-    resultBallon3.y -= 0.5;
-    resultText3.y -= 0.5;
-    ballonline3.y -= 0.5;
-
+   function resultBallonsPositions() {
+    resultBallon.y -= velocity;
+    resultText1.y -= velocity;
+    ballonline1.y -= velocity;
+    resultBallon2.y -= velocity;
+    resultText2.y -= velocity;
+    ballonline2.y -= velocity;
+    resultBallon3.y -= velocity;
+    resultText3.y -= velocity;
+    ballonline3.y -= velocity;
+    
     if (resultBallon.y == height * -1) {
       ballonsGone();
-      /*
-      resultBallon.y = 0;
-      resultText1.y = height - 5;
-      ballonline1.y = height + 30;
-      resultBallon2.y = 0;
-      resultText2.y = height - 5;
-      ballonline2.y = height + 30;
-      resultBallon3.y = 0;
-      resultText3.y = height - 5;
-      ballonline3.y = height + 30;
-      */
     }
   }
   /*
    * Function that checks if it is game over
    */
-  function gameOverCheck() {
+   function gameOverCheck() {
     if (livesRemaining === 0) {
       gameScene.visible = false;
       gameOverScene.visible = true;
       scoreMessage.text = "You Scored " + currentScore + " points!";
+      hasGameStarted = false;
+      velocity = 0.5;
     }
   }
   /*
-   * Function that resizes the game depending on the window size
-   * TODO needs to make game compatible with screen resizing
+   * Function that resizes the game depending on the window size 
    */
-  function resize() {
-    console.log("window");
+   function resize() {
     var ratio = 1080 / 1920;
     var docWidth = document.body.clientWidth;
-    var docHeight = document.body.heiclientHeight;
+    var docHeight = document.body.clientHeight;
 
     if (docHeight / docWidth < ratio) {
       renderer.view.style.height = '100%';
@@ -640,20 +704,23 @@
   /*
    * Function that returns a random number between the max and the min
    */
-  function getRandomInt(min, max) {
+   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   /*
    * Fires at the end of the gameloop to reset and redraw the canvas.
    */
-  function gameLoop() {
+   function gameLoop() {
     //Loop this function 60 times per second
     requestAnimationFrame(gameLoop);
-    //Checks if it's gameover
-    gameOverCheck();
-    //positiones the results ballons
-    resultBallonsPositions();
+
+    if (hasGameStarted === true) {
+      //Checks if it's gameover
+      gameOverCheck();
+      //positiones the results ballons
+      resultBallonsPositions();
+    }
     // Render the stage for the current frame.
     renderer.render(stage);
   }
