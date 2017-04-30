@@ -43,6 +43,7 @@
   var equationMessage;
   var hasGameStarted = false;
   var velocity = 0.5;
+  var scoreBoard;
   // Create the main stage to draw on.
   var stage = new PIXI.Stage();
 
@@ -51,6 +52,8 @@
   var gameScene = new PIXI.Container();
 
   var gameOverScene = new PIXI.Container();
+
+  var highScoresScene = new PIXI.Container();
 
   var successAudio = new Audio("Music/sucess.mp3");
   var errorAudio = new Audio("Music/Incorrect.mp3");
@@ -82,7 +85,6 @@
       );
      
     cloud.y = (height / 2) - height * 0.2;
-
 
     gameScene.addChild(cloud);
   }
@@ -246,6 +248,73 @@
   }
 
   /*
+  *Adds new easy high score to the local storage
+  */
+  function addHighScore(){
+    var highScore = getHighScore();
+    var score = currentScore;
+    highScore.splice(0, 0, score);
+    localStorage.setItem('highScore', JSON.stringify(highScore)); 
+    displayHighScore();    
+  }
+  /*
+  * This functions gets the high scores
+  */
+  function getHighScore(){
+    var highScore = localStorage.getItem('highScore');
+    if(highScore === null) {
+      highScore = [];
+      }else {
+        return JSON.parse(highScore);
+    }
+    return highScore;
+  }
+
+  //Diplays easy high scores
+  function displayHighScore(){
+    //clear down the score board,to ensure there is no overlapping
+    for (var i = highScoresScene.children.length - 1; i >= 0; i--) {
+      highScoresScene.removeChild(highScoresScene.children[i]);
+    }   
+    //gets the high scores object from local storage
+    var highScore = getHighScore();
+    var ypos = 20;
+    var xpos = 20;
+
+    if (highScore.length > 0){
+      var scoreBoardHeader = new PIXI.Text(
+          "Your top 10 scores", {
+            fontFamily: "Arial",
+            fontSize: 40,
+            fill: "white"
+        });
+        //sets the position  
+      scoreBoardHeader.position.set(xpos, ypos);
+      highScoresScene.addChild(scoreBoardHeader);
+      ypos += 50;
+      xpos += 120;
+
+      //sorts the array from highest to lowest  
+      highScore.sort(function(a,b){return b - a;});
+      var highScores = highScore.slice(0, 10);      
+
+      for(var idx = 0; idx < highScores.length; idx++){    
+      
+        scoreBoard = new PIXI.Text(
+          highScore[idx] + " points", {
+            fontFamily: "Arial",
+            fontSize: 32,
+            fill: "white"
+        });
+        //sets the position  
+        scoreBoard.position.set(xpos, ypos);
+        highScoresScene.addChild(scoreBoard);
+        ypos +=32;
+      }
+    }
+  }  
+
+  /*
    * This function shows the game scene
    */
    function showGameScene() {
@@ -327,18 +396,25 @@
     startUpGameScene();
     showGameScene();
     hasGameStarted = true;
+    //hides High Score scene
+    highScoresScene.visible = false;
   }
 
   /*
    * This function adds all the scenes to the stage
    */
    function createAllScenes() {
+    // Start up scene
     stage.addChild(gameStartScene);
     gameScene.visible = false;
+    // game scene stage
     stage.addChild(gameScene);
+    //high scores stage
+    stage.addChild(highScoresScene);
     startUpGameScene();
+    //game over scene
     gameOverScene.visible = false;
-    stage.addChild(gameOverScene);
+    stage.addChild(gameOverScene);   
 
     createStartUpScene();
     createGameOverScene();
@@ -347,6 +423,8 @@
    * This function starts the game scene
    */
    function startUpGameScene() {
+    //Display high Scores
+    displayHighScore();
     clearDownCurrentBallons();
     // creates the first equation
     createNewEquation();
@@ -739,11 +817,14 @@
       playGameOverSound();
       // shows gameover scene
       gameOverScene.visible = true;
+      highScoresScene.visible = true;
       scoreMessage.text = "You Scored " + currentScore + " points!";
       // turns game off
       hasGameStarted = false;
       //resets velocity
       velocity = 0.5;
+      //add score to high score local storage
+      addHighScore();
     }
   }
   /*
