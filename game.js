@@ -52,6 +52,10 @@
 
   var gameOverScene = new PIXI.Container();
 
+  var successAudio = new Audio("Music/sucess.mp3");
+  var errorAudio = new Audio("Music/Incorrect.mp3");
+  var gameOverAudio = new Audio("Music/GameOver.mp3");
+
   operator = "+";
   // Start running the game.  
 
@@ -103,8 +107,8 @@
 
     var xpos = width * 0.41;
     var ypos = 90;
-    var marginForBoxes = 40;
-    var boxWidth = width * 0.2;
+    var marginForBoxes = 40
+;    var boxWidth = width * 0.2;
     var boxHeight = height * 0.1;
     var borderSize = 4;
     var borderColour = 0x99CCFF;
@@ -193,6 +197,52 @@
     livesRemaining = 5;
     currentScore = 0;
     gameStartScene.visible = true;
+  }
+
+  /*
+  *Function that plays correct answer sound
+  */
+  function playSuccessSound(){
+    //prevents sounds overlapping
+    errorAudio.pause();
+    if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){    
+      successAudio.currentTime = 0;
+      successAudio.play();
+    }else{
+      successAudio.src = successAudio.src;
+      successAudio.play();
+    }
+  }
+  /*
+  * Function that plays incorrect answer sound
+  */
+   function playErrorSound(){
+    //prevents sounds overlapping
+    successAudio.pause();
+
+    if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){    
+      errorAudio.currentTime = 0;
+      errorAudio.play();
+    }else{
+      errorAudio.src = errorAudio.src;
+      errorAudio.play();
+    }
+  }
+  /*
+  * Function that plays game over Audio
+  */
+  function playGameOverSound(){
+    //prevents sounds overlapping
+    successAudio.pause();
+    errorAudio.pause();
+
+    if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){    
+      gameOverAudio.currentTime = 0;
+      gameOverAudio.play();
+    }else{
+      gameOverAudio.src = gameOverAudio.src;
+      gameOverAudio.play();
+    }
   }
 
   /*
@@ -542,6 +592,8 @@
    */
    function checkAnswer(answer) {
     if (answer == result) {
+      //plays the sound for correct answer
+      playSuccessSound();
       // Clears the stage
       clearDownCurrentBallons();
       //creates a new equation
@@ -553,7 +605,11 @@
       //Increase Speed
       velocity += 0.1;
     } else {
+      //plays the sound for incorrect answer
+      playErrorSound();
+      //Decreases the lives by 1
       livesRemaining -= 1;
+      //Displays current lives
       displayLives();
     }
   }
@@ -677,10 +733,16 @@
    */
    function gameOverCheck() {
     if (livesRemaining === 0) {
+      // hides game scene
       gameScene.visible = false;
+      //plays game over sound
+      playGameOverSound();
+      // shows gameover scene
       gameOverScene.visible = true;
       scoreMessage.text = "You Scored " + currentScore + " points!";
+      // turns game off
       hasGameStarted = false;
+      //resets velocity
       velocity = 0.5;
     }
   }
