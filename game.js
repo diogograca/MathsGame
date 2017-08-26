@@ -10,7 +10,7 @@
   // Setup the rendering surface.
   var renderer = new PIXI.CanvasRenderer(width, height);
   renderer.autoResize = true;
-  renderer.backgroundColor = 0x85aae5; //Sets the background for the canvas
+  renderer.backgroundColor = 0x000000;//85aae5; //Sets the background for the canvas
 
   // var divMain = document.getElementById("Main");
   document.body.appendChild(renderer.view);
@@ -44,9 +44,10 @@
   var hasGameStarted = false;
   var velocity = 0.5;
   var scoreBoard;
+  
   // Create the main stage to draw on.
   var stage = new PIXI.Stage();
-
+  
   var gameStartScene = new PIXI.Container();
 
   var gameScene = new PIXI.Container();
@@ -109,8 +110,8 @@
 
     var xpos = width * 0.41;
     var ypos = 90;
-    var marginForBoxes = 40
-;    var boxWidth = width * 0.2;
+    var marginForBoxes = 40;
+    var boxWidth = width * 0.2;
     var boxHeight = height * 0.1;
     var borderSize = 4;
     var borderColour = 0x99CCFF;
@@ -404,6 +405,15 @@
    * This function adds all the scenes to the stage
    */
    function createAllScenes() {
+
+    var stageBorder = new PIXI.Graphics();
+    stageBorder.lineStyle(4, 0x85aae5, 1);
+    stageBorder.beginFill(0x85aae5);
+    stageBorder.drawRect(0, 0, width - 20, height - 20);
+    stageBorder.endFill();
+    stageBorder.x = 10;
+    stageBorder.y = 10;
+    stage.addChild(stageBorder);
     // Start up scene
     stage.addChild(gameStartScene);
     gameScene.visible = false;
