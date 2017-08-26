@@ -802,7 +802,7 @@
     resultText3.y -= velocity;
     ballonline3.y -= velocity;
     
-    if (resultBallon.y == height * -1) {
+    if (resultBallon.y < height * -1) {
       ballonsGone();
     }
   }
