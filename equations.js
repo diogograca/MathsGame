@@ -225,7 +225,91 @@ var equations = [{
       "correctResult": 6,
       "incorrectResult1": 8,
       "incorrectResult2": 4
-    }, {
+    },{
+      "firstNumber": 20,
+      "secondNumber":7,
+      "correctResult": 140,
+      "incorrectResult1": 130,
+      "incorrectResult2": 150
+      },{
+      "firstNumber": 8,
+      "secondNumber": 7,
+      "correctResult": 56,
+      "incorrectResult1": 46,
+      "incorrectResult2": 52
+      },{
+      "firstNumber": 9,
+      "secondNumber": 9,
+      "correctResult": 81,
+      "incorrectResult1": 85,
+      "incorrectResult2": 91
+      },{
+      "firstNumber": 6,
+      "secondNumber": 5,
+      "correctResult": 30,
+      "incorrectResult1": 35,
+      "incorrectResult2": 25
+      },{
+      "firstNumber": 6,
+      "secondNumber": 6,
+      "correctResult": 36,
+      "incorrectResult1": 46,
+      "incorrectResult2": 50
+      },{
+      "firstNumber": 12,
+      "secondNumber": 7,
+      "correctResult": 84,
+      "incorrectResult1": 80,
+      "incorrectResult2": 77
+      },{
+      "firstNumber": 2,
+      "secondNumber": 13,
+      "correctResult": 26,
+      "incorrectResult1": 24,
+      "incorrectResult2": 23
+      },{
+      "firstNumber": 18,
+      "secondNumber": 10,
+      "correctResult": 180,
+      "incorrectResult1": 80,
+      "incorrectResult2": 1800
+      },{
+      "firstNumber": 3,
+      "secondNumber": 5,
+      "correctResult": 15,
+      "incorrectResult1": 18,
+      "incorrectResult2": 16
+      },{
+      "firstNumber": 30,
+      "secondNumber": 7,
+      "correctResult": 210,
+      "incorrectResult1": 180,
+      "incorrectResult2": 200
+      },{
+      "firstNumber": 15,
+      "secondNumber": 3,
+      "correctResult": 45,
+      "incorrectResult1": 50,
+      "incorrectResult2": 40
+      },{
+      "firstNumber": 8,
+      "secondNumber": 8,
+      "correctResult": 64,
+      "incorrectResult1": 56,
+      "incorrectResult2": 72
+      },{
+      "firstNumber": 60,
+      "secondNumber": 5,
+      "correctResult": 300,
+      "incorrectResult1": 200,
+      "incorrectResult2": 210
+      },{
+      "firstNumber": 4,
+      "secondNumber": 8,
+      "correctResult": 32,
+      "incorrectResult1": 40,
+      "incorrectResult2": 24
+      }, {
       "firstNumber": 2,
       "secondNumber": 2,
       "correctResult": 4,
@@ -239,7 +323,121 @@ var equations = [{
       "correctResult": 2,
       "incorrectResult1": 1,
       "incorrectResult2": 3
-    }, {
+    },{
+      "firstNumber": 56,
+      "secondNumber": 8,
+      "correctResult": 7,
+      "incorrectResult1": 8,
+      "incorrectResult2": 6
+      },{
+      "firstNumber": 40,
+      "secondNumber": 5,
+      "correctResult": 8,
+      "incorrectResult1": 9,
+      "incorrectResult2": 10
+      },{
+      "firstNumber": 400,
+      "secondNumber": 25,
+      "correctResult": 16,
+      "incorrectResult1": 10,
+      "incorrectResult2": 12
+      },{
+      "firstNumber": 30,
+      "secondNumber": 6,
+      "correctResult": 5,
+      "incorrectResult1": 6,
+      "incorrectResult2": 7
+      },{
+      "firstNumber": 24,
+      "secondNumber": 12,
+      "correctResult": 2,
+      "incorrectResult1": 4,
+      "incorrectResult2": 3
+      },{
+      "firstNumber": 99,
+      "secondNumber": 11,
+      "correctResult": 9,
+      "incorrectResult1": 8,
+      "incorrectResult2": 7
+      },{
+      "firstNumber": 50,
+      "secondNumber": 5,
+      "correctResult": 10,
+      "incorrectResult1": 20,
+      "incorrectResult2": 15
+      },{
+      "firstNumber": 80,
+      "secondNumber": 5,
+      "correctResult": 30,
+      "incorrectResult1": 20,
+      "incorrectResult2": 50
+      },{
+      "firstNumber": 24,
+      "secondNumber": 8,
+      "correctResult": 3,
+      "incorrectResult1": 4,
+      "incorrectResult2": 5
+      },{
+      "firstNumber": 24,
+      "secondNumber": 3,
+      "correctResult": 8,
+      "incorrectResult1": 10,
+      "incorrectResult2": 9
+      },{
+      "firstNumber": 42,
+      "secondNumber": 3,
+      "correctResult": 14,
+      "incorrectResult1": 15,
+      "incorrectResult2": 13
+      },{
+      "firstNumber": 50,
+      "secondNumber": 10,
+      "correctResult": 5,
+      "incorrectResult1": 20,
+      "incorrectResult2": 6
+      },{
+      "firstNumber": 64,
+      "secondNumber": 8,
+      "correctResult": 8,
+      "incorrectResult1": 7,
+      "incorrectResult2": 6
+      },{
+      "firstNumber": 60,
+      "secondNumber": 6,
+      "correctResult": 10,
+      "incorrectResult1": 12,
+      "incorrectResult2": 9
+      },{
+      "firstNumber": 32,
+      "secondNumber": 2,
+      "correctResult": 16,
+      "incorrectResult1": 20,
+      "incorrectResult2": 18
+      },{
+      "firstNumber": 24,
+      "secondNumber": 6,
+      "correctResult": 4,
+      "incorrectResult1": 3,
+      "incorrectResult2": 2
+      },{
+      "firstNumber": 45,
+      "secondNumber": 5,
+      "correctResult": 9,
+      "incorrectResult1": 10,
+      "incorrectResult2": 8
+      },{
+      "firstNumber": 75,
+      "secondNumber": 15,
+      "correctResult": 5,
+      "incorrectResult1": 6,
+      "incorrectResult2": 7
+      },{
+      "firstNumber": 9,
+      "secondNumber": 3,
+      "correctResult": 3,
+      "incorrectResult1": 4,
+      "incorrectResult2": 2
+      }, {
       "firstNumber": 8,
       "secondNumber": 2,
       "correctResult": 4,
